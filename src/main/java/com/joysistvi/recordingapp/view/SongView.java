@@ -9,70 +9,58 @@ public class SongView {
 
     private final SongService songService;
 
-    public SongView(SongService songService){
+    public SongView(SongService songService) {
         this.songService = songService;
     }
 
     public void handleMenu() {
         while (true) {
-            System.out.println("\n===== SONGS =====");
-            System.out.println("1. View All Songs");
+            System.out.println("\n=== SONG MANAGEMENT ===");
+            System.out.println("1. View All Active Songs");
             System.out.println("2. Create Song");
             System.out.println("3. Update Song");
-            System.out.println("4. Delete Song");
-            System.out.println("5. Archive Song");
-            System.out.println("6. Restore Song");
-            System.out.println("7. Search Songs");
+            System.out.println("4. Search Songs");
+            System.out.println("5. Archive Song (Soft Delete)");
+            System.out.println("6. Restore Archived Song");
+            System.out.println("7. Delete Song (Permanent)");
             System.out.println("0. Back");
-            String choice = ConsoleInput.readString("Choose: ").trim();
 
+            int choice = promptForInt("Choose an option: ");
             switch (choice) {
-                case "1":
-                    displayAllSongs();
-                    break;
-                case "2":
-                    promptCreateSong();
-                    break;
-                case "3":
-                    promptUpdateSong();
-                    break;
-                case "4":
-                    promptDeleteSong();
-                    break;
-                case "5":
-                    promptArchiveSong();
-                    break;
-                case "6":
-                    promptRestoreSong();
-                    break;
-                case "7":
-                    promptSearchSongs();
-                    break;
-                case "0":
+                case 1 -> displayAllSongs();
+                case 2 -> promptCreateSong();
+                case 3 -> promptUpdateSong();
+                case 4 -> promptSearchSongs();
+                case 5 -> promptArchiveSong();
+                case 6 -> promptRestoreSong();
+                case 7 -> promptDeleteSong();
+                case 0 -> {
                     return;
-                default:
-                    System.out.println("\nInvalid choice.");
+                }
+                default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
 
-    public void displayAllSongs(){
+    public void displayAllSongs() {
         List<Song> songs = songService.getAllActiveSongs();
-        System.out.println("\n----- Songs ----");
+
+        System.out.println("\n----- Songs -----");
         printSongs(songs);
     }
 
-    public void promptCreateSong(){
+    public void promptCreateSong() {
         System.out.println("\n----- Create New Song -----");
         String title = ConsoleInput.readString("Enter song title: ");
         String genre = ConsoleInput.readString("Enter song genre: ");
-        String songLength = ConsoleInput.readString("Enter song length (e.g 3:25): ");
+        String songLength = ConsoleInput.readString("Enter song length (e.g. 3:25): ");
         int albumId = promptForInt("Enter album ID: ");
 
         if (songService.createSong(title, genre, songLength, albumId)) {
-            System.out.println("\nSong created successfully.");
+            System.out.println("\nSong " + title.trim() + " created successfully!");
+            displayAllSongs();
         } else {
-            System.out.println("\nFailed to create song.");
+            System.out.println("Failed to create song.");
         }
     }
 
@@ -85,24 +73,25 @@ public class SongView {
         int albumId = promptForInt("Enter new album ID: ");
 
         if (songService.updateSong(id, title, genre, songLength, albumId)) {
-            System.out.println("\nSong updated successfully.");
+            System.out.println("\nSong ID " + id + " updated successfully!");
+            displayAllSongs();
         } else {
-            System.out.println("\nFailed to update song.");
+            System.out.println("Failed to update song.");
         }
     }
 
     public void promptSearchSongs() {
-        System.out.println("\n----- Search Song -----");
+        System.out.println("\n----- Search Songs -----");
         String keyword = ConsoleInput.readString("Enter song title keyword: ");
 
-        List<Song> songs = songService.searchSongs(keyword);
-
-        if (songs.isEmpty()) {
-            System.out.println("\nNo songs found.");
+        if (keyword == null || keyword.trim().isEmpty()) {
+            songService.searchSongs(keyword);
             return;
         }
 
-        System.out.println("\n---- SEARCH RESULTS ----");
+        List<Song> songs = songService.searchSongs(keyword);
+
+        System.out.println("\n----- Search Songs (Keyword: '" + keyword.trim() + "') -----");
         printSongs(songs);
     }
 
@@ -111,46 +100,56 @@ public class SongView {
         int id = promptForInt("Enter song ID to archive: ");
 
         if (songService.archiveSong(id)) {
-            System.out.println("\nSong archived successfully.");
+            System.out.println("\nSong ID " + id + " archived successfully!");
+            displayAllSongs();
         } else {
-            System.out.println("\nFailed to archive song.");
+            System.out.println("Failed to archive song.");
         }
     }
 
     public void promptRestoreSong() {
+        System.out.println("\n----- Restore Song -----");
+
         List<Song> archivedSongs = songService.getAllArchivedSongs();
 
         if (archivedSongs.isEmpty()) {
-            System.out.println("\nNo archived songs to restore.");
+            System.out.println("No archived songs found.");
             return;
         }
 
-        System.out.println("\n----- Restore Song -----");
+        System.out.println("\n----- Archived Songs -----");
         printSongs(archivedSongs);
 
         int id = promptForInt("Enter song ID to restore: ");
 
         if (songService.restoreSong(id)) {
-            System.out.println("\nSong restored successfully.");
+            System.out.println("\nSong ID " + id + " restored successfully!");
+            displayAllSongs();
         } else {
-            System.out.println("\nFailed to restore song.");
+            System.out.println("Failed to restore song.");
         }
     }
 
     public void promptDeleteSong() {
         System.out.println("\n----- Delete Song -----");
-        int id = promptForInt("Enter song ID to permanently delete: ");
+        int id = promptForInt("Enter song ID to delete: ");
 
         if (songService.deleteSong(id)) {
-            System.out.println("\nSong deleted permanently.");
+            System.out.println("\nSong ID " + id + " deleted successfully!");
+            displayAllSongs();
         } else {
-            System.out.println("\nFailed to delete song.");
+            System.out.println("Failed to delete song.");
         }
     }
 
     private void printSongs(List<Song> songs) {
+        if (songs == null || songs.isEmpty()) {
+            System.out.println("No songs found.");
+            return;
+        }
+
         System.out.printf("%-5s %-30s %-15s %-8s %-25s%n", "ID", "TITLE", "GENRE", "LENGTH", "ALBUM");
-        System.out.println("-------------------------------------------------------------------------------------");
+
         for (Song song : songs) {
             System.out.printf("%-5d %-30s %-15s %-8s %-25s%n",
                     song.getId(),

@@ -1,13 +1,12 @@
 package com.joysistvi.recordingapp.model;
 
-// Model -> representing database entities
 public class Album {
 
     private int id;
     private String name;
     private int year;
     private int artistId;
-    private String artistName; // for joined display
+    private String artistName;
     private boolean archived;
 
     public Album(String name, int year, int artistId) {

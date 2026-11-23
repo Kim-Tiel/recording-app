@@ -8,6 +8,9 @@ public class Playlist {
     private String username;
     private boolean archived;
 
+    public Playlist() {
+    }
+
     public Playlist(String name, int userId) {
         this.name = name;
         this.userId = userId;
@@ -17,6 +20,13 @@ public class Playlist {
         this.id = id;
         this.name = name;
         this.userId = userId;
+    }
+
+    public Playlist(int id, String name, int userId, String username) {
+        this.id = id;
+        this.name = name;
+        this.userId = userId;
+        this.username = username;
     }
 
     public Playlist(int id, String name, int userId, String username, boolean archived) {

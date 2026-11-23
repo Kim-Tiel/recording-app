@@ -87,7 +87,7 @@ public class AlbumView {
         String keyword = ConsoleInput.readString("Enter keyword: ");
 
         if (keyword == null || keyword.trim().isEmpty()) {
-            albumService.searchAlbums(keyword); // shows the validation error
+            albumService.searchAlbums(keyword);
             return;
         }
 
@@ -114,7 +114,6 @@ public class AlbumView {
     public void promptRestoreAlbum() {
         System.out.println("\n----- Restore Album -----");
 
-        // display archived albums first
         List<Album> archivedAlbums = albumService.getAllArchivedAlbums();
 
         if (archivedAlbums.isEmpty()) {

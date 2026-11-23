@@ -9,8 +9,6 @@ import java.util.List;
 
 public class UserServiceImpl implements UserService {
 
-    // Constructor Injection
-    // Using Composition Service is loosely coupled to the Repository
     private final UserRepository userRepository;
 
     public UserServiceImpl(UserRepository userRepository) {
@@ -29,7 +27,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean createUser(String username, String rawPassword, String email) {
-        // Guard Clauses (validate BEFORE hashing)
         if (username == null || username.trim().isEmpty()) {
             System.out.println("\nValidation Error: Username is required.");
             return false;
@@ -53,7 +50,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean updateUser(int id, String username, String email) {
-        // Guard Clauses
         if (id <= 0) {
             System.out.println("\nValidation Error: ID must be greater than 0.");
             return false;
@@ -75,7 +71,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean deleteUser(int id) {
-        // Guard Clause
         if (id <= 0) {
             System.out.println("\nValidation Error: ID must be greater than 0.");
             return false;
@@ -86,7 +81,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean archiveUser(int id) {
-        // Guard Clause
         if (id <= 0) {
             System.out.println("\nValidation Error: ID must be greater than 0.");
             return false;
@@ -97,7 +91,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean restoreUser(int id) {
-        // Guard Clause
         if (id <= 0) {
             System.out.println("\nValidation Error: ID must be greater than 0.");
             return false;
@@ -108,7 +101,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> searchUsers(String keyword) {
-        // Guard Clause
         if (keyword == null || keyword.trim().isEmpty()) {
             System.out.println("\nValidation Error: Search keyword is required.");
             return new ArrayList<>();
@@ -119,7 +111,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User loginUser(String username, String candidatePassword) {
-        // Guard Clauses
         if (username == null || username.trim().isEmpty()) {
             System.out.println("\nValidation Error: Username is required.");
             return null;
@@ -133,17 +124,16 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUsername(username.trim());
 
         if (user == null) {
-            return null; // unknown username
+            return null;
         }
 
         try {
             if (BCrypt.checkpw(candidatePassword, user.getPassword())) {
-                return user; // correct password
+                return user;
             }
         } catch (IllegalArgumentException e) {
-            // old users (admin, kim, anderson) are not BCrypt hashes -> treat as failed login
         }
 
-        return null; // wrong password
+        return null;
     }
 }

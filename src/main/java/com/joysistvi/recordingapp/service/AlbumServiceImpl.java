@@ -8,8 +8,6 @@ import java.util.List;
 
 public class AlbumServiceImpl implements AlbumService {
 
-    // Constructor Injection
-    // Using Composition Service is loosely coupled to the Repository
     private final AlbumRepository albumRepository;
 
     public AlbumServiceImpl(AlbumRepository albumRepository) {
@@ -28,7 +26,6 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public boolean createAlbum(String name, int year, int artistId) {
-        // Guard Clauses
         if (name == null || name.trim().isEmpty()) {
             System.out.println("\nValidation Error: Album name is required.");
             return false;
@@ -50,7 +47,6 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public boolean updateAlbum(int id, String name, int year, int artistId) {
-        // Guard Clauses
         if (id <= 0) {
             System.out.println("\nValidation Error: ID must be greater than 0.");
             return false;
@@ -77,7 +73,6 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public boolean deleteAlbum(int id) {
-        // Guard Clause
         if (id <= 0) {
             System.out.println("\nValidation Error: ID must be greater than 0.");
             return false;
@@ -88,7 +83,6 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public boolean archiveAlbum(int id) {
-        // Guard Clause
         if (id <= 0) {
             System.out.println("\nValidation Error: ID must be greater than 0.");
             return false;
@@ -99,7 +93,6 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public boolean restoreAlbum(int id) {
-        // Guard Clause
         if (id <= 0) {
             System.out.println("\nValidation Error: ID must be greater than 0.");
             return false;
@@ -110,7 +103,6 @@ public class AlbumServiceImpl implements AlbumService {
 
     @Override
     public List<Album> searchAlbums(String keyword) {
-        // Guard Clause
         if (keyword == null || keyword.trim().isEmpty()) {
             System.out.println("\nValidation Error: Search keyword is required.");
             return new ArrayList<>();

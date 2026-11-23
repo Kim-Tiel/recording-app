@@ -26,7 +26,6 @@ public class SongRepositoryImpl implements SongRepository {
         try (Connection connection = dbConnection.connect();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
-
             while(resultSet.next()){
                 int id = resultSet.getInt("id");
                 String title = resultSet.getString("title");
@@ -57,7 +56,6 @@ public class SongRepositoryImpl implements SongRepository {
         try (Connection connection = dbConnection.connect();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
-
             while(resultSet.next()){
                 int id = resultSet.getInt("id");
                 String title = resultSet.getString("title");
@@ -83,7 +81,6 @@ public class SongRepositoryImpl implements SongRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedState = connection.prepareStatement(query)){
-
             preparedState.setString(1, song.getTitle());
             preparedState.setString(2, song.getGenre());
             preparedState.setString(3, song.getLength());
@@ -102,7 +99,6 @@ public class SongRepositoryImpl implements SongRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)){
-
             preparedStatement.setString(1, song.getTitle());
             preparedStatement.setString(2, song.getGenre());
             preparedStatement.setString(3, song.getLength());
@@ -123,7 +119,6 @@ public class SongRepositoryImpl implements SongRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedState = connection.prepareStatement(query)){
-
             preparedState.setInt(1, id);
 
             return preparedState.executeUpdate() > 0;
@@ -139,7 +134,6 @@ public class SongRepositoryImpl implements SongRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)){
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
@@ -155,7 +149,6 @@ public class SongRepositoryImpl implements SongRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)){
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;

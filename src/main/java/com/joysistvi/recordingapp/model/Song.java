@@ -1,13 +1,17 @@
 package com.joysistvi.recordingapp.model;
 
 public class Song {
+
     private int id;
     private String title;
     private String genre;
     private String length;
     private int albumId;
     private String albumName;
-    private boolean isArchived;
+    private boolean archived;
+
+    public Song() {
+    }
 
     public Song(String title, String genre, String length, int albumId) {
         this.title = title;
@@ -24,14 +28,23 @@ public class Song {
         this.albumId = albumId;
     }
 
-    public Song(int id, String title, String genre, String length, int albumId, String albumName, boolean isArchived) {
+    public Song(int id, String title, String genre, String length, int albumId, String albumName) {
         this.id = id;
         this.title = title;
         this.genre = genre;
         this.length = length;
         this.albumId = albumId;
         this.albumName = albumName;
-        this.isArchived = isArchived;
+    }
+
+    public Song(int id, String title, String genre, String length, int albumId, String albumName, boolean archived) {
+        this.id = id;
+        this.title = title;
+        this.genre = genre;
+        this.length = length;
+        this.albumId = albumId;
+        this.albumName = albumName;
+        this.archived = archived;
     }
 
     public int getId() {
@@ -70,6 +83,10 @@ public class Song {
         return albumId;
     }
 
+    public void setAlbumId(int albumId) {
+        this.albumId = albumId;
+    }
+
     public String getAlbumName() {
         return albumName;
     }
@@ -78,15 +95,11 @@ public class Song {
         this.albumName = albumName;
     }
 
-    public void setAlbumId(int albumId) {
-        this.albumId = albumId;
-    }
-
     public boolean isArchived() {
-        return isArchived;
+        return archived;
     }
 
     public void setArchived(boolean archived) {
-        isArchived = archived;
+        this.archived = archived;
     }
 }

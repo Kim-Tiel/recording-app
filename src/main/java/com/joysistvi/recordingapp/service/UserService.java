@@ -4,7 +4,6 @@ import com.joysistvi.recordingapp.model.User;
 
 import java.util.List;
 
-// Service(Application Tier) -> Business rules, validation, guard clauses
 public interface UserService {
 
     List<User> getAllActiveUsers();

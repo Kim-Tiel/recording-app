@@ -13,8 +13,6 @@ import java.util.List;
 
 public class ArtistRepositoryImpl implements ArtistRepository {
 
-    // Constructor Injection
-    // Using Composition Artist Repository is loosely coupled to DbConnection
     private final DbConnection dbConnection;
 
     public ArtistRepositoryImpl(DbConnection dbConnection) {
@@ -29,7 +27,6 @@ public class ArtistRepositoryImpl implements ArtistRepository {
         try (Connection connection = dbConnection.connect();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
-
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
@@ -49,7 +46,6 @@ public class ArtistRepositoryImpl implements ArtistRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, artist.getName());
 
             return preparedStatement.executeUpdate() > 0;
@@ -68,7 +64,6 @@ public class ArtistRepositoryImpl implements ArtistRepository {
         try (Connection connection = dbConnection.connect();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
-
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
@@ -88,7 +83,6 @@ public class ArtistRepositoryImpl implements ArtistRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, artist.getName());
             preparedStatement.setInt(2, artist.getId());
 
@@ -106,7 +100,6 @@ public class ArtistRepositoryImpl implements ArtistRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
@@ -123,7 +116,6 @@ public class ArtistRepositoryImpl implements ArtistRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
@@ -140,7 +132,6 @@ public class ArtistRepositoryImpl implements ArtistRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
@@ -158,7 +149,6 @@ public class ArtistRepositoryImpl implements ArtistRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, "%" + keyword + "%");
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

@@ -83,7 +83,7 @@ public class ArtistView {
         String keyword = ConsoleInput.readString("Enter keyword: ");
 
         if (keyword == null || keyword.trim().isEmpty()) {
-            artistService.searchArtists(keyword); // shows the validation error
+            artistService.searchArtists(keyword);
             return;
         }
 
@@ -110,7 +110,6 @@ public class ArtistView {
     public void promptRestoreArtist() {
         System.out.println("\n----- Restore Artist -----");
 
-        // display archived artists first
         List<Artist> archivedArtists = artistService.getAllArchivedArtists();
 
         if (archivedArtists.isEmpty()) {

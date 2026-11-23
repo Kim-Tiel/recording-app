@@ -148,7 +148,7 @@ public class UserView {
         }
     }
 
-    public User promptLoginUser() {
+    public User promptLogin() {
         System.out.println("\n----- Login -----");
         String username = ConsoleInput.readString("Enter username: ");
         String password = ConsoleInput.readString("Enter password: ");

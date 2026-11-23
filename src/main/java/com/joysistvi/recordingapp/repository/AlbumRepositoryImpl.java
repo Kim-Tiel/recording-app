@@ -13,8 +13,6 @@ import java.util.List;
 
 public class AlbumRepositoryImpl implements AlbumRepository {
 
-    // Constructor Injection
-    // Using Composition Album Repository is loosely coupled to DbConnection
     private final DbConnection dbConnection;
 
     public AlbumRepositoryImpl(DbConnection dbConnection) {
@@ -32,7 +30,6 @@ public class AlbumRepositoryImpl implements AlbumRepository {
         try (Connection connection = dbConnection.connect();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
-
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
@@ -60,7 +57,6 @@ public class AlbumRepositoryImpl implements AlbumRepository {
         try (Connection connection = dbConnection.connect();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
-
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
@@ -83,7 +79,6 @@ public class AlbumRepositoryImpl implements AlbumRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, album.getName());
             preparedStatement.setInt(2, album.getYear());
             preparedStatement.setInt(3, album.getArtistId());
@@ -102,7 +97,6 @@ public class AlbumRepositoryImpl implements AlbumRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, album.getName());
             preparedStatement.setInt(2, album.getYear());
             preparedStatement.setInt(3, album.getArtistId());
@@ -122,7 +116,6 @@ public class AlbumRepositoryImpl implements AlbumRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
@@ -139,7 +132,6 @@ public class AlbumRepositoryImpl implements AlbumRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
@@ -156,7 +148,6 @@ public class AlbumRepositoryImpl implements AlbumRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
@@ -177,7 +168,6 @@ public class AlbumRepositoryImpl implements AlbumRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, "%" + keyword + "%");
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

@@ -27,7 +27,6 @@ public class UserRepositoryImpl implements UserRepository {
         try (Connection connection = dbConnection.connect();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
-
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String username = resultSet.getString("username");
@@ -52,7 +51,6 @@ public class UserRepositoryImpl implements UserRepository {
         try (Connection connection = dbConnection.connect();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(query)) {
-
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String username = resultSet.getString("username");
@@ -75,7 +73,6 @@ public class UserRepositoryImpl implements UserRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, username);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -101,7 +98,6 @@ public class UserRepositoryImpl implements UserRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.setString(3, user.getEmail());
@@ -121,7 +117,6 @@ public class UserRepositoryImpl implements UserRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, user.getUsername());
             preparedStatement.setString(2, user.getEmail());
             preparedStatement.setInt(3, user.getId());
@@ -140,7 +135,6 @@ public class UserRepositoryImpl implements UserRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
@@ -157,7 +151,6 @@ public class UserRepositoryImpl implements UserRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
@@ -174,7 +167,6 @@ public class UserRepositoryImpl implements UserRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setInt(1, id);
 
             return preparedStatement.executeUpdate() > 0;
@@ -192,7 +184,6 @@ public class UserRepositoryImpl implements UserRepository {
 
         try (Connection connection = dbConnection.connect();
              PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-
             preparedStatement.setString(1, "%" + keyword + "%");
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

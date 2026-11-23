@@ -4,7 +4,6 @@ import com.joysistvi.recordingapp.model.Album;
 
 import java.util.List;
 
-// Repository(Data Tier) -> Data Access Logic and Data Persistence
 public interface AlbumRepository {
 
     List<Album> findAllActive();

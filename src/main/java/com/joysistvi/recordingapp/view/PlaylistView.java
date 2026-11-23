@@ -1,39 +1,50 @@
 package com.joysistvi.recordingapp.view;
 
 import com.joysistvi.recordingapp.model.Playlist;
+import com.joysistvi.recordingapp.model.Song;
 import com.joysistvi.recordingapp.service.PlaylistService;
+import com.joysistvi.recordingapp.service.SongService;
 
 import java.util.List;
 
 public class PlaylistView {
 
     private final PlaylistService playlistService;
+    private final SongService songService;
+    private int currentUserId;
 
-    public PlaylistView(PlaylistService playlistService) {
+    public PlaylistView(PlaylistService playlistService, SongService songService) {
         this.playlistService = playlistService;
+        this.songService = songService;
     }
 
-    public void handleMenu() {
+    public void handleMenu(int userId) {
+        this.currentUserId = userId;
+
         while (true) {
             System.out.println("\n=== PLAYLIST MANAGEMENT ===");
             System.out.println("1. View All Active Playlists");
-            System.out.println("2. Create Playlist");
+            System.out.println("2. Create My Playlist");
             System.out.println("3. Update Playlist");
             System.out.println("4. Search Playlists");
             System.out.println("5. Archive Playlist (Soft Delete)");
             System.out.println("6. Restore Archived Playlist");
             System.out.println("7. Delete Playlist (Permanent)");
+            System.out.println("8. View My Playlist (with Songs)");
+            System.out.println("9. Manage Songs in My Playlist");
             System.out.println("0. Back");
 
             int choice = promptForInt("Choose an option: ");
             switch (choice) {
                 case 1 -> displayAllPlaylists();
-                case 2 -> promptCreatePlaylist();
+                case 2 -> promptCreatePlaylist(currentUserId);
                 case 3 -> promptUpdatePlaylist();
                 case 4 -> promptSearchPlaylists();
                 case 5 -> promptArchivePlaylist();
                 case 6 -> promptRestorePlaylist();
                 case 7 -> promptDeletePlaylist();
+                case 8 -> handleViewUserPlaylists(currentUserId);
+                case 9 -> handleManageSongsInPlaylist(currentUserId);
                 case 0 -> {
                     return;
                 }
@@ -49,10 +60,9 @@ public class PlaylistView {
         printPlaylists(playlists);
     }
 
-    public void promptCreatePlaylist() {
-        System.out.println("\n----- Create New Playlist -----");
+    public void promptCreatePlaylist(int userId) {
+        System.out.println("\n----- Create My Playlist -----");
         String name = ConsoleInput.readString("Enter playlist name: ");
-        int userId = promptForInt("Enter user ID (owner): ");
 
         boolean created = playlistService.createPlaylist(name, userId);
 
@@ -85,7 +95,7 @@ public class PlaylistView {
         String keyword = ConsoleInput.readString("Enter keyword: ");
 
         if (keyword == null || keyword.trim().isEmpty()) {
-            playlistService.searchPlaylists(keyword); // shows the validation error
+            playlistService.searchPlaylists(keyword);
             return;
         }
 
@@ -148,6 +158,79 @@ public class PlaylistView {
         }
     }
 
+    public void handleViewUserPlaylists(int userId) {
+        List<Playlist> userPlaylists = playlistService.getPlaylistsByUser(userId);
+
+        if (userPlaylists.isEmpty()) {
+            System.out.println("\nNo playlist found. Please create a playlist first.");
+            return;
+        }
+
+        for (Playlist playlist : userPlaylists) {
+            System.out.println("\nPlaylist: " + playlist.getName());
+            List<Song> songs = playlistService.getSongsInPlaylist(playlist.getId());
+            printSongs("----- Current Songs in Playlist -----", songs);
+        }
+    }
+
+    public void handleManageSongsInPlaylist(int userId) {
+        List<Playlist> userPlaylists = playlistService.getPlaylistsByUser(userId);
+
+        if (userPlaylists.isEmpty()) {
+            System.out.println("\nNo playlist found. Please create a playlist first.");
+            return;
+        }
+
+        Playlist playlist = userPlaylists.get(0);
+
+        while (true) {
+            System.out.println("\n=== MANAGE SONGS (" + playlist.getName() + ") ===");
+            System.out.println("1. Add Song to Playlist");
+            System.out.println("2. Remove Song from Playlist");
+            System.out.println("0. Back");
+
+            int choice = promptForInt("Choose an option: ");
+            switch (choice) {
+                case 1 -> promptAddSong(playlist);
+                case 2 -> promptRemoveSong(playlist);
+                case 0 -> {
+                    return;
+                }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+        }
+    }
+
+    private void promptAddSong(Playlist playlist) {
+        printSongs("----- Available Songs -----", songService.getAllActiveSongs());
+        int songId = promptForInt("Enter song ID to add: ");
+
+        if (playlistService.addSongToPlaylist(playlist.getId(), songId)) {
+            System.out.println("\nSong added to playlist.");
+            printSongs("----- Current Songs in Playlist -----", playlistService.getSongsInPlaylist(playlist.getId()));
+        } else {
+            System.out.println("Failed to add song to playlist.");
+        }
+    }
+
+    private void promptRemoveSong(Playlist playlist) {
+        List<Song> songs = playlistService.getSongsInPlaylist(playlist.getId());
+
+        if (songs.isEmpty()) {
+            System.out.println("\nNo songs in this playlist yet.");
+            return;
+        }
+
+        printSongs("----- Current Songs in Playlist -----", songs);
+        int songId = promptForInt("Enter song ID to remove: ");
+
+        if (playlistService.removeSongFromPlaylist(playlist.getId(), songId)) {
+            System.out.println("\nSong removed from playlist.");
+        } else {
+            System.out.println("Failed to remove song from playlist.");
+        }
+    }
+
     private void printPlaylists(List<Playlist> playlists) {
         if (playlists == null || playlists.isEmpty()) {
             System.out.println("No playlists found.");
@@ -161,6 +244,26 @@ public class PlaylistView {
                     playlist.getId(),
                     playlist.getName(),
                     playlist.getUsername());
+        }
+    }
+
+    private void printSongs(String header, List<Song> songs) {
+        System.out.println("\n" + header);
+
+        if (songs == null || songs.isEmpty()) {
+            System.out.println("No songs found.");
+            return;
+        }
+
+        System.out.printf("%-5s %-30s %-15s %-8s %-25s%n", "ID", "TITLE", "GENRE", "LENGTH", "ALBUM");
+
+        for (Song song : songs) {
+            System.out.printf("%-5d %-30s %-15s %-8s %-25s%n",
+                    song.getId(),
+                    song.getTitle(),
+                    song.getGenre(),
+                    song.getLength(),
+                    song.getAlbumName());
         }
     }
 

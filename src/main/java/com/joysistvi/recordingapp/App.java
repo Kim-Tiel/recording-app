@@ -29,7 +29,6 @@ import com.joysistvi.recordingapp.view.PlaylistView;
 import com.joysistvi.recordingapp.view.SongView;
 import com.joysistvi.recordingapp.view.UserView;
 
-// Entry Point
 public class App {
 
     private final SongView songView;
@@ -43,7 +42,6 @@ public class App {
     public App() {
         DbConnection dbConnection = new DbConnection();
 
-        // Wiring (bottom-up): DbConnection -> Repository -> Service -> View
         SongRepository songRepository = new SongRepositoryImpl(dbConnection);
         SongService songService = new SongServiceImpl(songRepository);
         this.songView = new SongView(songService);
@@ -62,7 +60,7 @@ public class App {
 
         PlaylistRepository playlistRepository = new PlaylistRepositoryImpl(dbConnection);
         PlaylistService playlistService = new PlaylistServiceImpl(playlistRepository);
-        this.playlistView = new PlaylistView(playlistService);
+        this.playlistView = new PlaylistView(playlistService, songService);
     }
 
     public static void main(String[] args) {
@@ -96,7 +94,7 @@ public class App {
             int choice = promptForInt("Choice: ");
             switch (choice) {
                 case 1 -> {
-                    User user = userView.promptLoginUser();
+                    User user = userView.promptLogin();
                     if (user != null) {
                         return user;
                     }
@@ -126,7 +124,7 @@ public class App {
                 case 2 -> artistView.handleMenu();
                 case 3 -> albumView.handleMenu();
                 case 4 -> userView.handleMenu();
-                case 5 -> playlistView.handleMenu();
+                case 5 -> playlistView.handleMenu(currentUser.getId());
                 case 0 -> {
                     return;
                 }

@@ -4,7 +4,6 @@ import com.joysistvi.recordingapp.model.Album;
 
 import java.util.List;
 
-// Service(Application Tier) -> Business rules, validation, guard clauses
 public interface AlbumService {
 
     List<Album> getAllActiveAlbums();
