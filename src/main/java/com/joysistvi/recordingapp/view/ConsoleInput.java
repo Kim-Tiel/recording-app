@@ -2,7 +2,6 @@ package com.joysistvi.recordingapp.view;
 
 import java.util.Scanner;
 
-// View(Presentation Tier) -> single shared Scanner for all console input
 public class ConsoleInput {
 
     private static final Scanner scanner = new Scanner(System.in);
@@ -17,7 +16,7 @@ public class ConsoleInput {
         try {
             return Integer.parseInt(scanner.nextLine().trim());
         } catch (NumberFormatException e) {
-            return -1; // invalid number -> guard clause will catch it
+            return -1;
         }
     }
 }

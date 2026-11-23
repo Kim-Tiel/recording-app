@@ -5,7 +5,6 @@ import com.joysistvi.recordingapp.service.UserService;
 
 import java.util.List;
 
-// View(Presentation Tier) -> Console menus, Scanner inputs, and formatted output
 public class UserView {
 
     private final UserService userService;
@@ -14,49 +13,31 @@ public class UserView {
         this.userService = userService;
     }
 
-    public void showMenu() {
+    public void handleMenu() {
         while (true) {
-            System.out.println("\n===== USERS =====");
-            System.out.println("1. View All Users");
+            System.out.println("\n=== USER MANAGEMENT ===");
+            System.out.println("1. View All Active Users");
             System.out.println("2. Register User");
             System.out.println("3. Update User");
-            System.out.println("4. Delete User");
-            System.out.println("5. Archive User");
-            System.out.println("6. Restore User");
-            System.out.println("7. Search Users");
-            System.out.println("8. Login");
+            System.out.println("4. Search Users");
+            System.out.println("5. Archive User (Soft Delete)");
+            System.out.println("6. Restore Archived User");
+            System.out.println("7. Delete User (Permanent)");
             System.out.println("0. Back");
-            String choice = ConsoleInput.readString("Choose: ").trim();
 
+            int choice = promptForInt("Choose an option: ");
             switch (choice) {
-                case "1":
-                    displayAllUsers();
-                    break;
-                case "2":
-                    promptCreateUser();
-                    break;
-                case "3":
-                    promptUpdateUser();
-                    break;
-                case "4":
-                    promptDeleteUser();
-                    break;
-                case "5":
-                    promptArchiveUser();
-                    break;
-                case "6":
-                    promptRestoreUser();
-                    break;
-                case "7":
-                    promptSearchUsers();
-                    break;
-                case "8":
-                    promptLoginUser();
-                    break;
-                case "0":
+                case 1 -> displayAllUsers();
+                case 2 -> promptCreateUser();
+                case 3 -> promptUpdateUser();
+                case 4 -> promptSearchUsers();
+                case 5 -> promptArchiveUser();
+                case 6 -> promptRestoreUser();
+                case 7 -> promptDeleteUser();
+                case 0 -> {
                     return;
-                default:
-                    System.out.println("\nInvalid choice.");
+                }
+                default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
@@ -85,7 +66,7 @@ public class UserView {
 
     public void promptUpdateUser() {
         System.out.println("\n----- Update User -----");
-        int id = ConsoleInput.readInt("Enter user ID to update: ");
+        int id = promptForInt("Enter user ID to update: ");
         String username = ConsoleInput.readString("Enter new username: ");
         String email = ConsoleInput.readString("Enter new email: ");
 
@@ -99,23 +80,24 @@ public class UserView {
         }
     }
 
-    public void promptDeleteUser() {
-        System.out.println("\n----- Delete User -----");
-        int id = ConsoleInput.readInt("Enter user ID to delete: ");
+    public void promptSearchUsers() {
+        System.out.println("\n----- Search Users -----");
+        String keyword = ConsoleInput.readString("Enter keyword: ");
 
-        boolean deleted = userService.deleteUser(id);
-
-        if (deleted) {
-            System.out.println("\nUser ID " + id + " deleted successfully!");
-            displayAllUsers();
-        } else {
-            System.out.println("Failed to delete user.");
+        if (keyword == null || keyword.trim().isEmpty()) {
+            userService.searchUsers(keyword);
+            return;
         }
+
+        List<User> users = userService.searchUsers(keyword);
+
+        System.out.println("\n----- Search Users (Keyword: '" + keyword.trim() + "') -----");
+        printUsers(users);
     }
 
     public void promptArchiveUser() {
         System.out.println("\n----- Archive User -----");
-        int id = ConsoleInput.readInt("Enter user ID to archive: ");
+        int id = promptForInt("Enter user ID to archive: ");
 
         boolean archived = userService.archiveUser(id);
 
@@ -130,7 +112,6 @@ public class UserView {
     public void promptRestoreUser() {
         System.out.println("\n----- Restore User -----");
 
-        // display archived users first
         List<User> archivedUsers = userService.getAllArchivedUsers();
 
         if (archivedUsers.isEmpty()) {
@@ -141,7 +122,7 @@ public class UserView {
         System.out.println("\n----- Archived Users -----");
         printUsers(archivedUsers);
 
-        int id = ConsoleInput.readInt("Enter user ID to restore: ");
+        int id = promptForInt("Enter user ID to restore: ");
 
         boolean restored = userService.restoreUser(id);
 
@@ -153,30 +134,24 @@ public class UserView {
         }
     }
 
-    public void promptSearchUsers() {
-        System.out.println("\n----- Search Users -----");
-        String keyword = ConsoleInput.readString("Enter keyword: ");
+    public void promptDeleteUser() {
+        System.out.println("\n----- Delete User -----");
+        int id = promptForInt("Enter user ID to delete: ");
 
-        if (keyword == null || keyword.trim().isEmpty()) {
-            userService.searchUsers(keyword); // shows the validation error
-            return;
+        boolean deleted = userService.deleteUser(id);
+
+        if (deleted) {
+            System.out.println("\nUser ID " + id + " deleted successfully!");
+            displayAllUsers();
+        } else {
+            System.out.println("Failed to delete user.");
         }
-
-        List<User> users = userService.searchUsers(keyword);
-
-        System.out.println("\n----- Search Users (Keyword: '" + keyword.trim() + "') -----");
-        printUsers(users);
     }
 
-    public void promptLoginUser() {
+    public User promptLoginUser() {
         System.out.println("\n----- Login -----");
         String username = ConsoleInput.readString("Enter username: ");
         String password = ConsoleInput.readString("Enter password: ");
-
-        if (username == null || username.trim().isEmpty() || password == null || password.isEmpty()) {
-            userService.loginUser(username, password); // shows the validation error
-            return;
-        }
 
         User user = userService.loginUser(username, password);
 
@@ -185,6 +160,8 @@ public class UserView {
         } else {
             System.out.println("\nLogin failed: Invalid username or password.");
         }
+
+        return user;
     }
 
     private void printUsers(List<User> users) {
@@ -202,5 +179,9 @@ public class UserView {
                     user.getEmail(),
                     user.getRole());
         }
+    }
+
+    private int promptForInt(String prompt) {
+        return ConsoleInput.readInt(prompt);
     }
 }

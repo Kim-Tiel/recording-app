@@ -1,0 +1,92 @@
+package com.joysistvi.recordingapp.model;
+
+public class Song {
+    private int id;
+    private String title;
+    private String genre;
+    private String length;
+    private int albumId;
+    private String albumName;
+    private boolean isArchived;
+
+    public Song(String title, String genre, String length, int albumId) {
+        this.title = title;
+        this.genre = genre;
+        this.length = length;
+        this.albumId = albumId;
+    }
+
+    public Song(int id, String title, String genre, String length, int albumId) {
+        this.id = id;
+        this.title = title;
+        this.genre = genre;
+        this.length = length;
+        this.albumId = albumId;
+    }
+
+    public Song(int id, String title, String genre, String length, int albumId, String albumName, boolean isArchived) {
+        this.id = id;
+        this.title = title;
+        this.genre = genre;
+        this.length = length;
+        this.albumId = albumId;
+        this.albumName = albumName;
+        this.isArchived = isArchived;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public void setLength(String length) {
+        this.length = length;
+    }
+
+    public int getAlbumId() {
+        return albumId;
+    }
+
+    public String getAlbumName() {
+        return albumName;
+    }
+
+    public void setAlbumName(String albumName) {
+        this.albumName = albumName;
+    }
+
+    public void setAlbumId(int albumId) {
+        this.albumId = albumId;
+    }
+
+    public boolean isArchived() {
+        return isArchived;
+    }
+
+    public void setArchived(boolean archived) {
+        isArchived = archived;
+    }
+}

@@ -5,7 +5,6 @@ import com.joysistvi.recordingapp.service.ArtistService;
 
 import java.util.List;
 
-// View(Presentation Tier) -> Console menus, Scanner inputs, and formatted output
 public class ArtistView {
 
     private final ArtistService artistService;
@@ -14,45 +13,31 @@ public class ArtistView {
         this.artistService = artistService;
     }
 
-    public void showMenu() {
+    public void handleMenu() {
         while (true) {
-            System.out.println("\n===== ARTISTS =====");
-            System.out.println("1. View All Artists");
+            System.out.println("\n=== ARTIST MANAGEMENT ===");
+            System.out.println("1. View All Active Artists");
             System.out.println("2. Create Artist");
             System.out.println("3. Update Artist");
-            System.out.println("4. Delete Artist");
-            System.out.println("5. Archive Artist");
-            System.out.println("6. Restore Artist");
-            System.out.println("7. Search Artists");
+            System.out.println("4. Search Artists");
+            System.out.println("5. Archive Artist (Soft Delete)");
+            System.out.println("6. Restore Archived Artist");
+            System.out.println("7. Delete Artist (Permanent)");
             System.out.println("0. Back");
-            String choice = ConsoleInput.readString("Choose: ").trim();
 
+            int choice = promptForInt("Choose an option: ");
             switch (choice) {
-                case "1":
-                    displayAllArtists();
-                    break;
-                case "2":
-                    promptCreateArtist();
-                    break;
-                case "3":
-                    promptUpdateArtist();
-                    break;
-                case "4":
-                    promptDeleteArtist();
-                    break;
-                case "5":
-                    promptArchiveArtist();
-                    break;
-                case "6":
-                    promptRestoreArtist();
-                    break;
-                case "7":
-                    promptSearchArtists();
-                    break;
-                case "0":
+                case 1 -> displayAllArtists();
+                case 2 -> promptCreateArtist();
+                case 3 -> promptUpdateArtist();
+                case 4 -> promptSearchArtists();
+                case 5 -> promptArchiveArtist();
+                case 6 -> promptRestoreArtist();
+                case 7 -> promptDeleteArtist();
+                case 0 -> {
                     return;
-                default:
-                    System.out.println("\nInvalid choice.");
+                }
+                default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
@@ -80,7 +65,7 @@ public class ArtistView {
 
     public void promptUpdateArtist() {
         System.out.println("\n----- Update Artist -----");
-        int id = ConsoleInput.readInt("Enter artist ID to update: ");
+        int id = promptForInt("Enter artist ID to update: ");
         String name = ConsoleInput.readString("Enter new artist name: ");
 
         boolean updated = artistService.updateArtist(id, name);
@@ -93,23 +78,24 @@ public class ArtistView {
         }
     }
 
-    public void promptDeleteArtist() {
-        System.out.println("\n----- Delete Artist -----");
-        int id = ConsoleInput.readInt("Enter artist ID to delete: ");
+    public void promptSearchArtists() {
+        System.out.println("\n----- Search Artists -----");
+        String keyword = ConsoleInput.readString("Enter keyword: ");
 
-        boolean deleted = artistService.deleteArtist(id);
-
-        if (deleted) {
-            System.out.println("\nArtist ID " + id + " deleted successfully!");
-            displayAllArtists();
-        } else {
-            System.out.println("Failed to delete artist.");
+        if (keyword == null || keyword.trim().isEmpty()) {
+            artistService.searchArtists(keyword); // shows the validation error
+            return;
         }
+
+        List<Artist> artists = artistService.searchArtists(keyword);
+
+        System.out.println("\n----- Search Artists (Keyword: '" + keyword.trim() + "') -----");
+        printArtists(artists);
     }
 
     public void promptArchiveArtist() {
         System.out.println("\n----- Archive Artist -----");
-        int id = ConsoleInput.readInt("Enter artist ID to archive: ");
+        int id = promptForInt("Enter artist ID to archive: ");
 
         boolean archived = artistService.archiveArtist(id);
 
@@ -135,7 +121,7 @@ public class ArtistView {
         System.out.println("\n----- Archived Artists -----");
         printArtists(archivedArtists);
 
-        int id = ConsoleInput.readInt("Enter artist ID to restore: ");
+        int id = promptForInt("Enter artist ID to restore: ");
 
         boolean restored = artistService.restoreArtist(id);
 
@@ -147,19 +133,18 @@ public class ArtistView {
         }
     }
 
-    public void promptSearchArtists() {
-        System.out.println("\n----- Search Artists -----");
-        String keyword = ConsoleInput.readString("Enter keyword: ");
+    public void promptDeleteArtist() {
+        System.out.println("\n----- Delete Artist -----");
+        int id = promptForInt("Enter artist ID to delete: ");
 
-        if (keyword == null || keyword.trim().isEmpty()) {
-            artistService.searchArtists(keyword); // shows the validation error
-            return;
+        boolean deleted = artistService.deleteArtist(id);
+
+        if (deleted) {
+            System.out.println("\nArtist ID " + id + " deleted successfully!");
+            displayAllArtists();
+        } else {
+            System.out.println("Failed to delete artist.");
         }
-
-        List<Artist> artists = artistService.searchArtists(keyword);
-
-        System.out.println("\n----- Search Artists (Keyword: '" + keyword.trim() + "') -----");
-        printArtists(artists);
     }
 
     private void printArtists(List<Artist> artists) {
@@ -175,5 +160,9 @@ public class ArtistView {
                     artist.getId(),
                     artist.getName());
         }
+    }
+
+    private int promptForInt(String prompt) {
+        return ConsoleInput.readInt(prompt);
     }
 }

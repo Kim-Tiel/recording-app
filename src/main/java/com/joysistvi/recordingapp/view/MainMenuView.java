@@ -1,6 +1,5 @@
 package com.joysistvi.recordingapp.view;
 
-// View(Presentation Tier) -> main console menu
 public class MainMenuView {
 
     private final ArtistView artistView;
@@ -24,13 +23,13 @@ public class MainMenuView {
 
             switch (choice) {
                 case "1":
-                    artistView.showMenu();
+                    artistView.handleMenu();
                     break;
                 case "2":
-                    albumView.showMenu();
+                    albumView.handleMenu();
                     break;
                 case "3":
-                    userView.showMenu();
+                    userView.handleMenu();
                     break;
                 case "0":
                     System.out.println("\nGoodbye!");

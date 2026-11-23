@@ -5,7 +5,6 @@ import com.joysistvi.recordingapp.service.AlbumService;
 
 import java.util.List;
 
-// View(Presentation Tier) -> Console menus, Scanner inputs, and formatted output
 public class AlbumView {
 
     private final AlbumService albumService;
@@ -14,45 +13,31 @@ public class AlbumView {
         this.albumService = albumService;
     }
 
-    public void showMenu() {
+    public void handleMenu() {
         while (true) {
-            System.out.println("\n===== ALBUMS =====");
-            System.out.println("1. View All Albums");
+            System.out.println("\n=== ALBUM MANAGEMENT ===");
+            System.out.println("1. View All Active Albums");
             System.out.println("2. Create Album");
             System.out.println("3. Update Album");
-            System.out.println("4. Delete Album");
-            System.out.println("5. Archive Album");
-            System.out.println("6. Restore Album");
-            System.out.println("7. Search Albums");
+            System.out.println("4. Search Albums");
+            System.out.println("5. Archive Album (Soft Delete)");
+            System.out.println("6. Restore Archived Album");
+            System.out.println("7. Delete Album (Permanent)");
             System.out.println("0. Back");
-            String choice = ConsoleInput.readString("Choose: ").trim();
 
+            int choice = promptForInt("Choose an option: ");
             switch (choice) {
-                case "1":
-                    displayAllAlbums();
-                    break;
-                case "2":
-                    promptCreateAlbum();
-                    break;
-                case "3":
-                    promptUpdateAlbum();
-                    break;
-                case "4":
-                    promptDeleteAlbum();
-                    break;
-                case "5":
-                    promptArchiveAlbum();
-                    break;
-                case "6":
-                    promptRestoreAlbum();
-                    break;
-                case "7":
-                    promptSearchAlbums();
-                    break;
-                case "0":
+                case 1 -> displayAllAlbums();
+                case 2 -> promptCreateAlbum();
+                case 3 -> promptUpdateAlbum();
+                case 4 -> promptSearchAlbums();
+                case 5 -> promptArchiveAlbum();
+                case 6 -> promptRestoreAlbum();
+                case 7 -> promptDeleteAlbum();
+                case 0 -> {
                     return;
-                default:
-                    System.out.println("\nInvalid choice.");
+                }
+                default -> System.out.println("Invalid option. Please try again.");
             }
         }
     }
@@ -67,8 +52,8 @@ public class AlbumView {
     public void promptCreateAlbum() {
         System.out.println("\n----- Create New Album -----");
         String name = ConsoleInput.readString("Enter album name: ");
-        int year = ConsoleInput.readInt("Enter year: ");
-        int artistId = ConsoleInput.readInt("Enter artist ID: ");
+        int year = promptForInt("Enter year: ");
+        int artistId = promptForInt("Enter artist ID: ");
 
         boolean created = albumService.createAlbum(name, year, artistId);
 
@@ -82,10 +67,10 @@ public class AlbumView {
 
     public void promptUpdateAlbum() {
         System.out.println("\n----- Update Album -----");
-        int id = ConsoleInput.readInt("Enter album ID to update: ");
+        int id = promptForInt("Enter album ID to update: ");
         String name = ConsoleInput.readString("Enter new album name: ");
-        int year = ConsoleInput.readInt("Enter new year: ");
-        int artistId = ConsoleInput.readInt("Enter new artist ID: ");
+        int year = promptForInt("Enter new year: ");
+        int artistId = promptForInt("Enter new artist ID: ");
 
         boolean updated = albumService.updateAlbum(id, name, year, artistId);
 
@@ -97,23 +82,24 @@ public class AlbumView {
         }
     }
 
-    public void promptDeleteAlbum() {
-        System.out.println("\n----- Delete Album -----");
-        int id = ConsoleInput.readInt("Enter album ID to delete: ");
+    public void promptSearchAlbums() {
+        System.out.println("\n----- Search Albums -----");
+        String keyword = ConsoleInput.readString("Enter keyword: ");
 
-        boolean deleted = albumService.deleteAlbum(id);
-
-        if (deleted) {
-            System.out.println("\nAlbum ID " + id + " deleted successfully!");
-            displayAllAlbums();
-        } else {
-            System.out.println("Failed to delete album.");
+        if (keyword == null || keyword.trim().isEmpty()) {
+            albumService.searchAlbums(keyword); // shows the validation error
+            return;
         }
+
+        List<Album> albums = albumService.searchAlbums(keyword);
+
+        System.out.println("\n----- Search Albums (Keyword: '" + keyword.trim() + "') -----");
+        printAlbums(albums);
     }
 
     public void promptArchiveAlbum() {
         System.out.println("\n----- Archive Album -----");
-        int id = ConsoleInput.readInt("Enter album ID to archive: ");
+        int id = promptForInt("Enter album ID to archive: ");
 
         boolean archived = albumService.archiveAlbum(id);
 
@@ -139,7 +125,7 @@ public class AlbumView {
         System.out.println("\n----- Archived Albums -----");
         printAlbums(archivedAlbums);
 
-        int id = ConsoleInput.readInt("Enter album ID to restore: ");
+        int id = promptForInt("Enter album ID to restore: ");
 
         boolean restored = albumService.restoreAlbum(id);
 
@@ -151,19 +137,18 @@ public class AlbumView {
         }
     }
 
-    public void promptSearchAlbums() {
-        System.out.println("\n----- Search Albums -----");
-        String keyword = ConsoleInput.readString("Enter keyword: ");
+    public void promptDeleteAlbum() {
+        System.out.println("\n----- Delete Album -----");
+        int id = promptForInt("Enter album ID to delete: ");
 
-        if (keyword == null || keyword.trim().isEmpty()) {
-            albumService.searchAlbums(keyword); // shows the validation error
-            return;
+        boolean deleted = albumService.deleteAlbum(id);
+
+        if (deleted) {
+            System.out.println("\nAlbum ID " + id + " deleted successfully!");
+            displayAllAlbums();
+        } else {
+            System.out.println("Failed to delete album.");
         }
-
-        List<Album> albums = albumService.searchAlbums(keyword);
-
-        System.out.println("\n----- Search Albums (Keyword: '" + keyword.trim() + "') -----");
-        printAlbums(albums);
     }
 
     private void printAlbums(List<Album> albums) {
@@ -181,5 +166,9 @@ public class AlbumView {
                     album.getYear(),
                     album.getArtistName());
         }
+    }
+
+    private int promptForInt(String prompt) {
+        return ConsoleInput.readInt(prompt);
     }
 }
