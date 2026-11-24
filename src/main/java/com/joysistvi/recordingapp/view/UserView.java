@@ -15,6 +15,7 @@ public class UserView {
 
     public void handleMenu() {
         while (true) {
+            ConsoleInput.clearScreen();
             System.out.println("\n=== USER MANAGEMENT ===");
             System.out.println("1. View All Active Users");
             System.out.println("2. Register User");
@@ -39,6 +40,8 @@ public class UserView {
                 }
                 default -> System.out.println("Invalid option. Please try again.");
             }
+
+            ConsoleInput.pause();
         }
     }
 
@@ -65,6 +68,7 @@ public class UserView {
     }
 
     public void promptUpdateUser() {
+        displayAllUsers();
         System.out.println("\n----- Update User -----");
         int id = promptForInt("Enter user ID to update: ");
         String username = ConsoleInput.readString("Enter new username: ");
@@ -135,9 +139,9 @@ public class UserView {
     }
 
     public void promptDeleteUser() {
+        displayAllUsers();
         System.out.println("\n----- Delete User -----");
         int id = promptForInt("Enter user ID to delete: ");
-
         boolean deleted = userService.deleteUser(id);
 
         if (deleted) {
@@ -170,15 +174,21 @@ public class UserView {
             return;
         }
 
-        System.out.printf("%-4s %-20s %-30s %-6s%n", "ID", "Username", "Email", "Role");
+        String border = ConsoleInput.border(5, 20, 30, 6);
+
+        System.out.println(border);
+        System.out.printf("| %-5s | %-20s | %-30s | %-6s |%n", "ID", "Username", "Email", "Role");
+        System.out.println(border);
 
         for (User user : users) {
-            System.out.printf("%-4d %-20s %-30s %-6s%n",
+            System.out.printf("| %-5d | %-20s | %-30s | %-6s |%n",
                     user.getId(),
-                    user.getUsername(),
-                    user.getEmail(),
-                    user.getRole());
+                    ConsoleInput.truncate(user.getUsername(), 20),
+                    ConsoleInput.truncate(user.getEmail(), 30),
+                    ConsoleInput.truncate(user.getRole(), 6));
         }
+
+        System.out.println(border);
     }
 
     private int promptForInt(String prompt) {

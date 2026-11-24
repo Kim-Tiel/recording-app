@@ -22,6 +22,7 @@ public class PlaylistView {
         this.currentUserId = userId;
 
         while (true) {
+            ConsoleInput.clearScreen();
             System.out.println("\n=== PLAYLIST MANAGEMENT ===");
             System.out.println("1. View All Active Playlists");
             System.out.println("2. Create My Playlist");
@@ -50,6 +51,54 @@ public class PlaylistView {
                 }
                 default -> System.out.println("Invalid option. Please try again.");
             }
+
+            ConsoleInput.pause();
+        }
+    }
+
+    public void handleUserMenu(int userId) {
+        this.currentUserId = userId;
+
+        while (true) {
+            ConsoleInput.clearScreen();
+            System.out.println("\n=== MY PLAYLIST ===");
+            System.out.println("1. View My Playlist");
+            System.out.println("2. Create My Playlist");
+            System.out.println("3. Delete My Playlist");
+            System.out.println("4. Add / Remove Songs in My Playlist");
+            System.out.println("0. Back");
+
+            int choice = promptForInt("Choose an option: ");
+            switch (choice) {
+                case 1 -> handleViewUserPlaylists(currentUserId);
+                case 2 -> promptCreatePlaylist(currentUserId);
+                case 3 -> promptDeleteUserPlaylist(currentUserId);
+                case 4 -> handleManageSongsInPlaylist(currentUserId);
+                case 0 -> {
+                    return;
+                }
+                default -> System.out.println("Invalid option. Please try again.");
+            }
+
+            ConsoleInput.pause();
+        }
+    }
+
+    public void promptDeleteUserPlaylist(int userId) {
+        System.out.println("\n----- Delete My Playlist -----");
+        List<Playlist> userPlaylists = playlistService.getPlaylistsByUser(userId);
+
+        if (userPlaylists.isEmpty()) {
+            System.out.println("No playlist found to delete.");
+            return;
+        }
+
+        Playlist playlist = userPlaylists.get(0);
+
+        if (playlistService.deletePlaylist(playlist.getId())) {
+            System.out.println("\nPlaylist " + playlist.getName() + " deleted successfully!");
+        } else {
+            System.out.println("Failed to delete playlist.");
         }
     }
 
@@ -75,6 +124,7 @@ public class PlaylistView {
     }
 
     public void promptUpdatePlaylist() {
+        displayAllPlaylists();
         System.out.println("\n----- Update Playlist -----");
         int id = promptForInt("Enter playlist ID to update: ");
         String name = ConsoleInput.readString("Enter new playlist name: ");
@@ -106,6 +156,7 @@ public class PlaylistView {
     }
 
     public void promptArchivePlaylist() {
+        displayAllPlaylists();
         System.out.println("\n----- Archive Playlist -----");
         int id = promptForInt("Enter playlist ID to archive: ");
 
@@ -145,6 +196,7 @@ public class PlaylistView {
     }
 
     public void promptDeletePlaylist() {
+        displayAllPlaylists();
         System.out.println("\n----- Delete Playlist -----");
         int id = promptForInt("Enter playlist ID to delete: ");
 
@@ -184,6 +236,7 @@ public class PlaylistView {
         Playlist playlist = userPlaylists.get(0);
 
         while (true) {
+            ConsoleInput.clearScreen();
             System.out.println("\n=== MANAGE SONGS (" + playlist.getName() + ") ===");
             System.out.println("1. Add Song to Playlist");
             System.out.println("2. Remove Song from Playlist");
@@ -198,6 +251,8 @@ public class PlaylistView {
                 }
                 default -> System.out.println("Invalid option. Please try again.");
             }
+
+            ConsoleInput.pause();
         }
     }
 
@@ -237,14 +292,20 @@ public class PlaylistView {
             return;
         }
 
-        System.out.printf("%-4s %-25s %-20s%n", "ID", "Playlist Name", "Owner");
+        String border = ConsoleInput.border(5, 25, 20);
+
+        System.out.println(border);
+        System.out.printf("| %-5s | %-25s | %-20s |%n", "ID", "Playlist Name", "Owner");
+        System.out.println(border);
 
         for (Playlist playlist : playlists) {
-            System.out.printf("%-4d %-25s %-20s%n",
+            System.out.printf("| %-5d | %-25s | %-20s |%n",
                     playlist.getId(),
-                    playlist.getName(),
-                    playlist.getUsername());
+                    ConsoleInput.truncate(playlist.getName(), 25),
+                    ConsoleInput.truncate(playlist.getUsername(), 20));
         }
+
+        System.out.println(border);
     }
 
     private void printSongs(String header, List<Song> songs) {
@@ -255,16 +316,22 @@ public class PlaylistView {
             return;
         }
 
-        System.out.printf("%-5s %-30s %-15s %-8s %-25s%n", "ID", "TITLE", "GENRE", "LENGTH", "ALBUM");
+        String border = ConsoleInput.border(5, 25, 15, 8, 22);
+
+        System.out.println(border);
+        System.out.printf("| %-5s | %-25s | %-15s | %-8s | %-22s |%n", "ID", "Title", "Genre", "Length", "Album");
+        System.out.println(border);
 
         for (Song song : songs) {
-            System.out.printf("%-5d %-30s %-15s %-8s %-25s%n",
+            System.out.printf("| %-5d | %-25s | %-15s | %-8s | %-22s |%n",
                     song.getId(),
-                    song.getTitle(),
-                    song.getGenre(),
-                    song.getLength(),
-                    song.getAlbumName());
+                    ConsoleInput.truncate(song.getTitle(), 25),
+                    ConsoleInput.truncate(song.getGenre(), 15),
+                    ConsoleInput.truncate(song.getLength(), 8),
+                    ConsoleInput.truncate(song.getAlbumName(), 22));
         }
+
+        System.out.println(border);
     }
 
     private int promptForInt(String prompt) {

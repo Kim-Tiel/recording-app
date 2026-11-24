@@ -15,6 +15,7 @@ public class AlbumView {
 
     public void handleMenu() {
         while (true) {
+            ConsoleInput.clearScreen();
             System.out.println("\n=== ALBUM MANAGEMENT ===");
             System.out.println("1. View All Active Albums");
             System.out.println("2. Create Album");
@@ -39,6 +40,8 @@ public class AlbumView {
                 }
                 default -> System.out.println("Invalid option. Please try again.");
             }
+
+            ConsoleInput.pause();
         }
     }
 
@@ -66,6 +69,7 @@ public class AlbumView {
     }
 
     public void promptUpdateAlbum() {
+        displayAllAlbums();
         System.out.println("\n----- Update Album -----");
         int id = promptForInt("Enter album ID to update: ");
         String name = ConsoleInput.readString("Enter new album name: ");
@@ -98,6 +102,7 @@ public class AlbumView {
     }
 
     public void promptArchiveAlbum() {
+        displayAllAlbums();
         System.out.println("\n----- Archive Album -----");
         int id = promptForInt("Enter album ID to archive: ");
 
@@ -137,9 +142,9 @@ public class AlbumView {
     }
 
     public void promptDeleteAlbum() {
+        displayAllAlbums();
         System.out.println("\n----- Delete Album -----");
         int id = promptForInt("Enter album ID to delete: ");
-
         boolean deleted = albumService.deleteAlbum(id);
 
         if (deleted) {
@@ -156,15 +161,21 @@ public class AlbumView {
             return;
         }
 
-        System.out.printf("%-4s %-22s %-8s %-20s%n", "ID", "Name", "Year", "Artist");
+        String border = ConsoleInput.border(5, 25, 6, 25);
+
+        System.out.println(border);
+        System.out.printf("| %-5s | %-25s | %-6s | %-25s |%n", "ID", "Album Name", "Year", "Artist");
+        System.out.println(border);
 
         for (Album album : albums) {
-            System.out.printf("%-4d %-22s %-8d %-20s%n",
+            System.out.printf("| %-5d | %-25s | %-6d | %-25s |%n",
                     album.getId(),
-                    album.getName(),
+                    ConsoleInput.truncate(album.getName(), 25),
                     album.getYear(),
-                    album.getArtistName());
+                    ConsoleInput.truncate(album.getArtistName(), 25));
         }
+
+        System.out.println(border);
     }
 
     private int promptForInt(String prompt) {

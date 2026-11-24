@@ -15,6 +15,7 @@ public class ArtistView {
 
     public void handleMenu() {
         while (true) {
+            ConsoleInput.clearScreen();
             System.out.println("\n=== ARTIST MANAGEMENT ===");
             System.out.println("1. View All Active Artists");
             System.out.println("2. Create Artist");
@@ -39,6 +40,8 @@ public class ArtistView {
                 }
                 default -> System.out.println("Invalid option. Please try again.");
             }
+
+            ConsoleInput.pause();
         }
     }
 
@@ -65,8 +68,23 @@ public class ArtistView {
 
     public void promptUpdateArtist() {
         System.out.println("\n----- Update Artist -----");
+        displayAllArtists();
         int id = promptForInt("Enter artist ID to update: ");
-        String name = ConsoleInput.readString("Enter new artist name: ");
+
+        Artist current = artistService.getArtistById(id);
+
+        if (current == null) {
+            System.out.println("Artist not found or invalid ID.");
+            return;
+        }
+
+        String name = ConsoleInput.readString("Enter new artist name (press Enter to keep current [" + current.getName() + "]): ");
+
+        if (name.trim().isEmpty()) {
+            name = current.getName();
+        } else {
+            name = name.trim();
+        }
 
         boolean updated = artistService.updateArtist(id, name);
 
@@ -94,6 +112,7 @@ public class ArtistView {
     }
 
     public void promptArchiveArtist() {
+        displayAllArtists();
         System.out.println("\n----- Archive Artist -----");
         int id = promptForInt("Enter artist ID to archive: ");
 
@@ -133,6 +152,7 @@ public class ArtistView {
     }
 
     public void promptDeleteArtist() {
+        displayAllArtists();
         System.out.println("\n----- Delete Artist -----");
         int id = promptForInt("Enter artist ID to delete: ");
 
@@ -152,13 +172,19 @@ public class ArtistView {
             return;
         }
 
-        System.out.printf("%-4s %-20s%n", "ID", "Artist Name");
+        String border = ConsoleInput.border(5, 30);
+
+        System.out.println(border);
+        System.out.printf("| %-5s | %-30s |%n", "ID", "Artist Name");
+        System.out.println(border);
 
         for (Artist artist : artists) {
-            System.out.printf("%-4d %-20s%n",
+            System.out.printf("| %-5d | %-30s |%n",
                     artist.getId(),
-                    artist.getName());
+                    ConsoleInput.truncate(artist.getName(), 30));
         }
+
+        System.out.println(border);
     }
 
     private int promptForInt(String prompt) {

@@ -15,6 +15,7 @@ public class SongView {
 
     public void handleMenu() {
         while (true) {
+            ConsoleInput.clearScreen();
             System.out.println("\n=== SONG MANAGEMENT ===");
             System.out.println("1. View All Active Songs");
             System.out.println("2. Create Song");
@@ -39,6 +40,8 @@ public class SongView {
                 }
                 default -> System.out.println("Invalid option. Please try again.");
             }
+
+            ConsoleInput.pause();
         }
     }
 
@@ -65,6 +68,7 @@ public class SongView {
     }
 
     public void promptUpdateSong() {
+        displayAllSongs();
         System.out.println("\n----- Update Song -----");
         int id = promptForInt("Enter song ID to update: ");
         String title = ConsoleInput.readString("Enter new title: ");
@@ -131,6 +135,7 @@ public class SongView {
     }
 
     public void promptDeleteSong() {
+        displayAllSongs();
         System.out.println("\n----- Delete Song -----");
         int id = promptForInt("Enter song ID to delete: ");
 
@@ -148,16 +153,22 @@ public class SongView {
             return;
         }
 
-        System.out.printf("%-5s %-30s %-15s %-8s %-25s%n", "ID", "TITLE", "GENRE", "LENGTH", "ALBUM");
+        String border = ConsoleInput.border(5, 25, 15, 8, 22);
+
+        System.out.println(border);
+        System.out.printf("| %-5s | %-25s | %-15s | %-8s | %-22s |%n", "ID", "Title", "Genre", "Length", "Album");
+        System.out.println(border);
 
         for (Song song : songs) {
-            System.out.printf("%-5d %-30s %-15s %-8s %-25s%n",
+            System.out.printf("| %-5d | %-25s | %-15s | %-8s | %-22s |%n",
                     song.getId(),
-                    song.getTitle(),
-                    song.getGenre(),
-                    song.getLength(),
-                    song.getAlbumName());
+                    ConsoleInput.truncate(song.getTitle(), 25),
+                    ConsoleInput.truncate(song.getGenre(), 15),
+                    ConsoleInput.truncate(song.getLength(), 8),
+                    ConsoleInput.truncate(song.getAlbumName(), 22));
         }
+
+        System.out.println(border);
     }
 
     private int promptForInt(String prompt) {

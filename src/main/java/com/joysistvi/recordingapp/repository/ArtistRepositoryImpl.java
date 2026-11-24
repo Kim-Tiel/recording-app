@@ -165,4 +165,26 @@ public class ArtistRepositoryImpl implements ArtistRepository {
 
         return artists;
     }
+
+    @Override
+    public Artist findById(int id) {
+        String query = "SELECT * FROM artists WHERE id = ? AND is_archived = 0";
+
+        try (Connection connection = dbConnection.connect();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setInt(1, id);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    String name = resultSet.getString("name");
+                    boolean archived = resultSet.getBoolean("is_archived");
+                    return new Artist(id, name, archived);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("\nFind Artist Error: " + e.getMessage());
+        }
+
+        return null;
+    }
 }

@@ -80,12 +80,14 @@ public class App {
             dashboard();
 
             System.out.println("\nLogged out. Goodbye, " + currentUser.getUsername() + "!");
+            ConsoleInput.pause();
             currentUser = null;
         }
     }
 
     private User showAuthMenuAndAuthenticate() {
         while (true) {
+            ConsoleInput.clearScreen();
             System.out.println("\n=== RECORDING STUDIO ===");
             System.out.println("1. Login");
             System.out.println("2. Register");
@@ -96,6 +98,7 @@ public class App {
                 case 1 -> {
                     User user = userView.promptLogin();
                     if (user != null) {
+                        ConsoleInput.pause();
                         return user;
                     }
                 }
@@ -105,30 +108,83 @@ public class App {
                 }
                 default -> System.out.println("Invalid choice. Please try again.");
             }
+
+            ConsoleInput.pause();
         }
     }
 
     private void dashboard() {
+        if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
+            adminDashboard();
+        } else {
+            userDashboard();
+        }
+    }
+
+    private void adminDashboard() {
         while (true) {
-            System.out.println("\n=== DASHBOARD ===");
-            System.out.println("1. Song Management");
-            System.out.println("2. Artist Management");
-            System.out.println("3. Album Management");
-            System.out.println("4. Users Management");
-            System.out.println("5. Playlist Management");
+            ConsoleInput.clearScreen();
+            System.out.println("\n=== ADMIN DASHBOARD ===");
+            System.out.println("1. Manage Artists");
+            System.out.println("2. Manage Albums");
+            System.out.println("3. Manage Songs");
+            System.out.println("4. Manage Users");
             System.out.println("0. Logout");
 
             int choice = promptForInt("Choice: ");
             switch (choice) {
-                case 1 -> songView.handleMenu();
-                case 2 -> artistView.handleMenu();
-                case 3 -> albumView.handleMenu();
+                case 1 -> artistView.handleMenu();
+                case 2 -> albumView.handleMenu();
+                case 3 -> songView.handleMenu();
                 case 4 -> userView.handleMenu();
-                case 5 -> playlistView.handleMenu(currentUser.getId());
                 case 0 -> {
                     return;
                 }
-                default -> System.out.println("Invalid choice. Please try again.");
+                default -> {
+                    System.out.println("Invalid choice. Please try again.");
+                    ConsoleInput.pause();
+                }
+            }
+        }
+    }
+
+    private void userDashboard() {
+        while (true) {
+            ConsoleInput.clearScreen();
+            System.out.println("\n=== USER DASHBOARD ===");
+            System.out.println("1. Browse Artists");
+            System.out.println("2. Browse Albums");
+            System.out.println("3. Browse Songs");
+            System.out.println("4. Search Songs");
+            System.out.println("5. My Playlist");
+            System.out.println("0. Logout");
+
+            int choice = promptForInt("Choice: ");
+            switch (choice) {
+                case 1 -> {
+                    artistView.displayAllArtists();
+                    ConsoleInput.pause();
+                }
+                case 2 -> {
+                    albumView.displayAllAlbums();
+                    ConsoleInput.pause();
+                }
+                case 3 -> {
+                    songView.displayAllSongs();
+                    ConsoleInput.pause();
+                }
+                case 4 -> {
+                    songView.promptSearchSongs();
+                    ConsoleInput.pause();
+                }
+                case 5 -> playlistView.handleUserMenu(currentUser.getId());
+                case 0 -> {
+                    return;
+                }
+                default -> {
+                    System.out.println("Invalid choice. Please try again.");
+                    ConsoleInput.pause();
+                }
             }
         }
     }

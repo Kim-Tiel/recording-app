@@ -1,6 +1,7 @@
 package com.joysistvi.recordingapp.service;
 
 import com.joysistvi.recordingapp.model.Album;
+import com.joysistvi.recordingapp.model.Artist;
 
 import java.util.List;
 

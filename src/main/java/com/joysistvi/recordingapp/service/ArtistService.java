@@ -21,4 +21,6 @@ public interface ArtistService {
     boolean restoreArtist(int id);
 
     List<Artist> searchArtists(String keyword);
+
+    Artist getArtistById(int id);
 }
